@@ -1,21 +1,23 @@
-import xml
-from cmath import isinf
-from pydoc import html
+import sys
 
-from bs4 import BeautifulSoup, Tag
-
-from crawl import normalize_url
+from crawl import extract_page_data, get_html
 
 
 def main():
-    html_full = """<html><body>
-                <h2>Outside paragraph.</h2>
-                <main>
-                    <p>Main paragraph.</p>
-                </main>
-            </body></html>"""
-    print(html_full)
+    if len(sys.argv) == 2:
+        print("starting crawl of:", sys.argv[1])
+        page = get_html(sys.argv[1])
+        print(page)
+        # print(extract_page_data(page, sys.argv[1]))
+    elif len(sys.argv) < 2:
+        print("no website provided")
+        sys.exit(1)
+    else:
+        print("too many arguments provided")
+        sys.exit(1)
 
+
+main()
 
 if __name__ == "__main__":
     main()

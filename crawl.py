@@ -1,7 +1,20 @@
-from asyncio.protocols import SubprocessProtocol
+from typing import TypedDict
 from urllib.parse import urljoin
 
+import requests
 from bs4 import BeautifulSoup, Tag
+
+
+def get_html(url):
+    request = requests.get(url, headers={"User-agent": "BootCrawler/1.0"})
+    if request.status_code >= 400:
+        raise Exception(request.status_code)
+    html = request.text
+    if isinstance(html, str):
+        return html
+    else:
+        print("erro")
+        raise Exception("headers,content-type not a string")
 
 
 # %%
@@ -65,3 +78,21 @@ def get_images_from_html(html: str, base_url) -> list[str]:
         else:  # absolute
             img_src_list.append(img_src)
     return img_src_list
+
+
+class PageData(TypedDict):
+    url: str
+    heading: str
+    first_paragraph: str
+    outgoing_links: list[str]
+    image_urls: list[str]
+
+
+def extract_page_data(html: str, page_url: str) -> PageData:
+    dict = {}
+    dict["url"] = page_url
+    dict["heading"] = get_heading_from_html(html)
+    dict["first_paragraph"] = get_first_paragraph_from_html(html)
+    dict["outgoing_links"] = get_urls_from_html(html, page_url)
+    dict["image_urls"] = get_images_from_html(html, page_url)
+    return dict
