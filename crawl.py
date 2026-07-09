@@ -184,6 +184,12 @@ def get_first_paragraph_from_html(html: str) -> str:
     paragraph = soup.find("p")
     return paragraph.get_text(strip=True) if isinstance(paragraph, Tag) else ""
 
+def _is_image(url:str)->bool:
+    image_dots =['png','svg','jpg']
+    for img_type in image_dots:
+        if img_type==url[-3:]:
+            return True
+    return False
 
 def get_urls_from_html(html: str, base_url: str) -> list[str]:
     soup = BeautifulSoup(html, "lxml")
@@ -191,10 +197,11 @@ def get_urls_from_html(html: str, base_url: str) -> list[str]:
     url_vector = []
     for tag_a in links:
         url = tag_a.get("href")
-        if list(url)[0] == "/":  # relative
-            url_vector.append(urljoin(base_url, url))
-        else:  # absolute
-            url_vector.append(url)
+        if not _is_image(url):
+            if list(url)[0] == "/":  # relative
+                url_vector.append(urljoin(base_url, url))
+            else:  # absolute
+                url_vector.append(url)
 
     return url_vector
 

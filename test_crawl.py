@@ -5,6 +5,7 @@ from crawl import (
     get_first_paragraph_from_html,
     get_heading_from_html,
     get_images_from_html,
+    _is_image,
     get_urls_from_html,
     normalize_url,
 )
@@ -271,24 +272,28 @@ class TestCrawl(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
-def test_extract_page_data_empty(self):
+    def test_extract_page_data_empty(self):
 
-    input_url = "https://crawler-test.com"
-    input_body = """<html><body>
-            <p></p>
-            <main>
-            <p>pipi popop </p></main>
-        </body></html>"""
-    actual = extract_page_data(input_body, input_url)
-    expected = {
-        "url": "https://crawler-test.com",
-        "heading": "",
-        "first_paragraph": "",
-        "outgoing_links": [],
-        "image_urls": [],
-    }
-    self.assertEqual(actual, expected)
+        input_url = "https://crawler-test.com"
+        input_body = """<html><body>
+                <p></p>
+                <main>
+                <p>pipi popop </p></main>
+            </body></html>"""
+        actual = extract_page_data(input_body, input_url)
+        expected = {
+            "url": "https://crawler-test.com",
+            "heading": "",
+            "first_paragraph": "pipi popop",
+            "outgoing_links": [],
+            "image_urls": [],
+        }
+        self.assertEqual(actual, expected)
 
-
+    def test_is_image(self):
+        link ="https://scdata.com.br/static/img/photos/arquitetura-case-frota-analytics.png"
+        expected = True
+        actual = _is_image(link)
+        self.assertEqual(actual,expected)
 if __name__ == "__main__":
     unittest.main()
